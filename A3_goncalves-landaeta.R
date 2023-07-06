@@ -34,14 +34,36 @@ personas$ing_laboral_imp <- ifelse(personas$trab_remun == "1" & !is.na(personas$
 personas <- personas %>%
   mutate_at(vars(-id_hogar, -id_per), as.numeric)
 
+# GRUPOS DE OCUPACION ------------------------------------------------------------
+
 #Definir los valores específicos para el Grupo 1
-valores_grupo1 <- c("1", "2", "8", "9", "NA") # Aajust los valores según tusidades neces
+valores_grupo1 <- c("1", "2", "8", "9", "NA") # Ajusta los valores según tus necesidades
 
 # Crear una nueva variable de grupos de ocupación
 personas <- personas %>%
-  mutate(grupo_cat_ocupa = ifelse(cat_ocupa %in% valores_grupo1, "Grupo 1", "Grupo 2"))
+  mutate(grupo_cat_ocupa = ifelse(cat_ocupa %in% valores_grupo1, 1, 2))
 
-h <- personas %>% select(cat_ocupa, grupo_cat_ocupa, ing_laboral)
+#GRUPOS DE TIPOS DE CIUDAD -------------------------------------------------------------
+
+#Definir los valores específicos para el Grupo 1
+valores_grupo1_ciudad <- c("1", "4") 
+
+# Crear una nueva variable de grupos de tipo de ciudad
+personas <- personas %>%
+  mutate(grupo_tipo_ciudad = ifelse(tipo_ciudad %in% valores_grupo1_ciudad, 1, 2))
+
+#GRUPOS DE NIVEL EDUCATIVO -------------------------------------------------------------
+
+#Definir los valores específicos para el Grupo 1 y el Grupo 2
+valores_grupo1_nivel_edu <- c("6", "7") 
+valores_grupo2_nivel_edu <- c("5","4")
+
+# Crear una nueva variable de grupos de tipo de ciudad
+personas <- personas %>%
+  mutate(grupo_nivel_edu = ifelse(nivel_edu %in% valores_grupo1_nivel_edu, 1, ifelse(nivel_edu %in% valores_grupo2_nivel_edu, 2, 3)))
+
+#TABLA CON AGRUPACIONES -------------------------------------
+h <- personas %>% select(cat_ocupa, grupo_cat_ocupa, tipo_ciudad, grupo_tipo_ciudad, nivel_edu, grupo_nivel_edu, sexo, grp_edad,ing_laboral, ing_laboral_imp)
 
 # Real la imputación
 imputacion <- mice(personas[personas$ing_laboral_imp == 1, ], method = "pmm", pred = quickpred(personas))
