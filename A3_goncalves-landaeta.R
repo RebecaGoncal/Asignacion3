@@ -30,10 +30,18 @@ personas <- personas %>%
 # Crear una variable indicadora para identificar a las personas que deben tener ingresos laborales reportados
 personas$ing_laboral_imp <- ifelse(personas$trab_remun == "1" & !is.na(personas$trab_remun) & ( personas$ing_laboral <= 0 |  is.na(personas$ing_laboral)), 1, 0)
 
-
 # Convertir las variables haven_labelled a factores y luego a numéricas
 personas <- personas %>%
   mutate_at(vars(-id_hogar, -id_per), as.numeric)
+
+#Definir los valores específicos para el Grupo 1
+valores_grupo1 <- c("1", "2", "8", "9", "NA") # Aajust los valores según tusidades neces
+
+# Crear una nueva variable de grupos de ocupación
+personas <- personas %>%
+  mutate(grupo_cat_ocupa = ifelse(cat_ocupa %in% valores_grupo1, "Grupo 1", "Grupo 2"))
+
+h <- personas %>% select(cat_ocupa, grupo_cat_ocupa, ing_laboral)
 
 # Real la imputación
 imputacion <- mice(personas[personas$ing_laboral_imp == 1, ], method = "pmm", pred = quickpred(personas))
