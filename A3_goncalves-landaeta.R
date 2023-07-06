@@ -4,6 +4,7 @@
 # Librerias
 library(tidyverse)
 library(mice)
+library(miceadds)
 library(data.table)
 library(haven)
 
@@ -105,7 +106,7 @@ imputacion <- mice(personas[, c(col_imputar, col_donantes, "ing_laboral_imp")], 
 # Agrega los datos imputados a la base de datos IMP
 imp[,"ing_laboral"] <- complete(imputacion,1)[,"ing_laboral"]
 
-# Verificar los resultados)
+# Verificar los resultados
 summary(imp$ing_laboral)
 
 # Generar la variable que refleja el tamaño del grupo de donantes que cumple con las condiciones
@@ -116,4 +117,7 @@ n_imp <- imp %>%
 imp %>%
   filter(ing_laboral_imp == 0 & grupo_cat_ocupa == 1 & grupo_tipo_ciudad == 1 & grupo_nivel_edu == 1 & sexo ==1 & grp_edad== 5)
 
-
+#Porcentaje de valores imputados exitosamente
+comp_imp <- complete(imputacion)
+exito <-mean(complete.cases(comp_imp))
+porcentaje <- exito * 100
